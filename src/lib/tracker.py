@@ -15,19 +15,23 @@ class PriceTracker():
         if start_urls == None:
             self.start_urls = table_utils.get_start_urls(chat_id)
         self.chat_id = chat_id
+        self.no_errors = True
 
     def start_requests(self):
-        for url in self.start_urls:
-            if '?' not in url:
-                response = requests.get(url)
-                time.sleep(0.23)
-                self.parse_car_url(response, url, url)
-            else:
-                for page in range(1, 3):
-                    base_url = f'{url}&page={page}'
-                    response = requests.get(base_url)
+        try:
+            for url in self.start_urls:
+                if '?' not in url:
+                    response = requests.get(url)
                     time.sleep(0.23)
-                    self.parse_filter_url(response, base_url)
+                    self.parse_car_url(response, url, url)
+                else:
+                    for page in range(1, 3):
+                        base_url = f'{url}&page={page}'
+                        response = requests.get(base_url)
+                        time.sleep(0.23)
+                        self.parse_filter_url(response, base_url)
+        except:
+            self.no_errors = False
 
 
     def parse_car_url(self, response, url, base_url):

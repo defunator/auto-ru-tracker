@@ -3,6 +3,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler,
                         Filters, ConversationHandler, CallbackQueryHandler)
 from telegram import ParseMode
 from twisted.internet import reactor
+import re
 
 from lib.tracker import PriceTracker
 import lib.table_utils as table_utils
@@ -17,12 +18,30 @@ ADD_URL = range(1)
 DELETE_URL = range(1)
 
 def start(update, context):
-    update.message.reply_text('/add_url /list_urls /delete_url /get_prices')
+    update.message.reply_text('''
+        /start - start or update bot
+        /help - help
+        /add_url - add car url or filter url
+        /delete_url - delete car url or filter url
+        /list_url - list tracked urls
+        /get_prices - list tracked car urls
+        Prices are updated every hour.
+        For any questions and bugs please contact @defunator.
+    ''')
     context.job_queue.run_repeating(update_urls, interval=60*60, first=0, context=update.message.chat_id)
 
 
 def help(update, context):
-    update.message.reply_text('/add_url /list_urls /delete_url /get_prices')
+    update.message.reply_text('''
+        /start - start or update bot
+        /help - help
+        /add_url - add car url or filter url
+        /delete_url - delete car url or filter url
+        /list_url - list tracked urls
+        /get_prices - list tracked car urls
+        Prices are updated every hour.
+        For any questions and bugs please contact @defunator.
+    ''')
 
 def add_url(update, context):
     update.message.reply_text('Enter auto.ru url you want to track.')
@@ -30,12 +49,18 @@ def add_url(update, context):
 
 def add_url_input(update, context):
     url = update.message.text
+    if url[:16] !=  'https://auto.ru/':
+        update.message.reply_text(f'Oops, failed to track {url}!', disable_web_page_preview=True)
     chat_id = update.message.chat_id
-    table_utils.add_start_url(url, chat_id)
 
     update.message.reply_text(f'Wait...')
-    PriceTracker(start_urls=[url], chat_id=chat_id).start_requests()
-    update.message.reply_text(f'Added {url}', disable_web_page_preview=True)
+    price_tracker = PriceTracker(start_urls=[url], chat_id=chat_id)
+    price_tracker.start_requests()
+    if price_tracker.no_errors:
+        table_utils.add_start_url(url, chat_id)
+        update.message.reply_text(f'Added {url}', disable_web_page_preview=True)
+    else:
+        update.message.reply_text(f'Oops, failed to track {url}!', disable_web_page_preview=True)
 
     return ConversationHandler.END
 
@@ -61,7 +86,7 @@ def delete_url_input(update, context):
     chat_id = update.message.chat_id
     
     if not table_utils.delete_start_url(update.message.text, chat_id):
-        update.message.reply_text('Oops, no such url is tracked, check out tracked urls via /list_urls.')
+        update.message.reply_text('Oops, no such url is tracked! Check out tracked urls via /list_urls.')
     else:
         update.message.reply_text(f'Deleted {update.message.text}', disable_web_page_preview=True)
 
@@ -74,7 +99,7 @@ def get_prices(update, context):
 
     for index, row in table_utils.get_prices(chat_id).iterrows():
         has_prices = True
-        car_prices = '->'.join(row['prices'])
+        car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), row['prices'])))
         car_url = row['url']
         car_name = row['name']
         resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
@@ -101,7 +126,7 @@ def update_urls(context):
         clipped_row = rows.loc[i]['prices']
         if len(clipped_row) != prev_rows_size[i]:
             smth_changed = True
-            car_prices = '->'.join(clipped_row)
+            car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), clipped_row)))
             car_url = rows.loc[i]['url']
             car_name = rows.loc[i]['name']
             resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
