@@ -9,5 +9,5 @@ setup(name = 'auto-ru-tracker',
     description = 'A telegram bot that tracks auto.ru ads.',
     packages = ['src'],
     scripts = ['track'],
-    install_requires = ['beautifulsoup4', 'requests', 'pandas', 'lxml', 'python-telegram-bot']
+    install_requires = ['beautifulsoup4', 'requests', 'pandas', 'lxml', 'python-telegram-bot', 'twisted']
 )
