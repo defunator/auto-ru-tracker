@@ -3,7 +3,6 @@ import pandas as pd
 
 
 def update_url(url, base_url, price, name, chat_id):
-    print(f'update_url {url}')
     if not os.path.exists('data'):
         os.makedirs('data')
     if not os.path.exists(f'./data/{chat_id}'):
