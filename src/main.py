@@ -6,6 +6,7 @@ from twisted.internet import reactor
 
 from lib.tracker import PriceTracker
 import lib.table_utils as table_utils
+from lib.tokens import TOKEN
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -14,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 ADD_URL = range(1)
 DELETE_URL = range(1)
-TOKEN = ''
 
 def start(update, context):
     update.message.reply_text('/add_url /list_urls /delete_url /get_prices')
