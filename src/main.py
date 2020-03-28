@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import logging
 from telegram.ext import (Updater, CommandHandler, MessageHandler,
                         Filters, ConversationHandler, CallbackQueryHandler)
@@ -101,7 +103,7 @@ def get_prices(update, context):
         has_prices = True
         car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), row['prices'])))
         car_url = row['url']
-        car_name = row['name']
+        car_name = row['name'].encode('latin1').decode('utf8')
         resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
 
     if has_prices:
@@ -128,7 +130,7 @@ def update_urls(context):
             smth_changed = True
             car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), clipped_row)))
             car_url = rows.loc[i]['url']
-            car_name = rows.loc[i]['name']
+            car_name = rows.loc[i]['name'].encode('latin1').decode('utf8')
             resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
 
     if smth_changed:
