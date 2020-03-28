@@ -113,7 +113,7 @@ def error(update, context):
 
 
 if __name__ == '__main__':
-    updater = Updater("TOKEN", use_context=True)
+    updater = Updater("1113248395:AAFkAKtRvFOExPzsYgPZs1ZtnR3IuOfGHkw", use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
