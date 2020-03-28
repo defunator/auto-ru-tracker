@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 ADD_URL = range(1)
 DELETE_URL = range(1)
+TOKEN = ''
 
 def start(update, context):
     update.message.reply_text('/add_url /list_urls /delete_url /get_prices')
@@ -113,7 +114,7 @@ def error(update, context):
 
 
 if __name__ == '__main__':
-    updater = Updater("1113248395:AAFkAKtRvFOExPzsYgPZs1ZtnR3IuOfGHkw", use_context=True)
+    updater = Updater(TOKEN, use_context=True)
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
