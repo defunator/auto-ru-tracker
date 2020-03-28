@@ -21,7 +21,7 @@ def update_url(url, base_url, price, name, chat_id):
                                'url': [url],
                                'name': [name],
                                'prices': [price]})
-    print(f'prices {prices}')
+
     prices.to_csv(f'./data/{chat_id}/prices', index=False)
 
 def get_start_urls(chat_id):
@@ -37,7 +37,6 @@ def add_start_url(url, chat_id):
         os.makedirs(f'./data/{chat_id}')
 
     if os.path.exists(f'./data/{chat_id}/start_urls'):
-        print('exists')
         start_urls = pd.read_csv(f'./data/{chat_id}/start_urls')
         if url not in start_urls.url.values:
             start_urls.loc[start_urls.shape[0]] = [url]
