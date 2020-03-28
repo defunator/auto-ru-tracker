@@ -23,7 +23,7 @@ def start(update, context):
 /help - help
 /add_url - add car url or filter url
 /delete_url - delete car url or filter url
-/list_url - list tracked urls
+/list_urls - list tracked urls
 /get_prices - list tracked car urls
 Prices are updated every hour.
 For any questions and bugs please contact @defunator.
@@ -37,7 +37,7 @@ def help(update, context):
 /help - help
 /add_url - add car url or filter url
 /delete_url - delete car url or filter url
-/list_url - list tracked urls
+/list_urls - list tracked urls
 /get_prices - list tracked car urls
 Prices are updated every hour.
 For any questions and bugs please contact @defunator.
