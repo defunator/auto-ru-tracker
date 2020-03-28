@@ -19,28 +19,28 @@ DELETE_URL = range(1)
 
 def start(update, context):
     update.message.reply_text('''
-    /start - start or update bot
-    /help - help
-    /add_url - add car url or filter url
-    /delete_url - delete car url or filter url
-    /list_url - list tracked urls
-    /get_prices - list tracked car urls
-    Prices are updated every hour.
-    For any questions and bugs please contact @defunator.
+/start - start or update bot
+/help - help
+/add_url - add car url or filter url
+/delete_url - delete car url or filter url
+/list_url - list tracked urls
+/get_prices - list tracked car urls
+Prices are updated every hour.
+For any questions and bugs please contact @defunator.
     ''')
     context.job_queue.run_repeating(update_urls, interval=60*60, first=0, context=update.message.chat_id)
 
 
 def help(update, context):
     update.message.reply_text('''
-    /start - start or update bot
-    /help - help
-    /add_url - add car url or filter url
-    /delete_url - delete car url or filter url
-    /list_url - list tracked urls
-    /get_prices - list tracked car urls
-    Prices are updated every hour.
-    For any questions and bugs please contact @defunator.
+/start - start or update bot
+/help - help
+/add_url - add car url or filter url
+/delete_url - delete car url or filter url
+/list_url - list tracked urls
+/get_prices - list tracked car urls
+Prices are updated every hour.
+For any questions and bugs please contact @defunator.
     ''')
 
 def add_url(update, context):
