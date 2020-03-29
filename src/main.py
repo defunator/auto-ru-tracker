@@ -55,6 +55,8 @@ def add_url_input(update, context):
     url = update.message.text
     if url[:16] !=  'https://auto.ru/':
         update.message.reply_text(f'Oops, failed to track {url}!', disable_web_page_preview=True)
+        return ConversationHandler.END
+        
     chat_id = update.message.chat_id
 
     update.message.reply_text(f'Wait...')
