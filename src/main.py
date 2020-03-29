@@ -110,7 +110,7 @@ def get_prices(update, context):
     if has_prices:
         resps.sort(reverse=True)
         for response in resps:
-            resp = f'{resp}\n{response}'
+            resp = f'{resp}\n{response[1]}'
         update.message.reply_html(resp, disable_web_page_preview=True)
     else:
         update.message.reply_text('No urls are tracked, you can add url via /add_url.')
@@ -141,7 +141,7 @@ def update_urls(context):
     if smth_changed:
         resps.sort(reverse=True)
         for response in resps:
-            resp = f'{resp}\n{response}'
+            resp = f'{resp}\n{response[1]}'
         context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 def error(update, context):

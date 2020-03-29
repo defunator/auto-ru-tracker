@@ -24,13 +24,13 @@ class PriceTracker():
             for url in self.start_urls:
                 if '?' not in url:
                     response = requests.get(url)
-                    time.sleep(0.23)
+                    time.sleep(0.13)
                     self.parse_car_url(response, url, url)
                 else:
-                    for page in range(1, 3):
+                    for page in range(1, 5):
                         base_url = f'{url}&page={page}'
                         response = requests.get(base_url)
-                        time.sleep(0.23)
+                        time.sleep(0.13)
                         self.parse_filter_url(response, base_url)
         except:
             self.no_errors = False
@@ -52,6 +52,6 @@ class PriceTracker():
         for url_tag in soup.find_all('a', {'class': 'Link ListingItemThumb'}):
             url = et.HTML(str(url_tag)).getchildren()[0].getchildren()[0].get('href')
             response = requests.get(url)
-            time.sleep(0.23)
+            time.sleep(0.13)
             self.parse_car_url(response, url, base_url)
 
