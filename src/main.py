@@ -20,30 +20,32 @@ ADD_URL = range(1)
 DELETE_URL = range(1)
 
 def start(update, context):
-    update.message.reply_text('''
+    update.message.reply_html('''
 /start - start or update bot
 /help - help
 /add_url - add car url or filter url
 /delete_url - delete car url or filter url
 /list_urls - list tracked urls
 /get_prices - list tracked car urls
-Prices are updated every hour.
+Prices are updated every 5 hours.
 For any questions and bugs please contact @defunator.
-    ''')
+Source: <a href="https://github.com/defunator/auto-ru-tracker">github</a>
+    ''', disable_web_page_preview=True)
     context.job_queue.run_repeating(update_urls, interval=5*60*60, first=0, context=update.message.chat_id)
 
 
 def help(update, context):
-    update.message.reply_text('''
+    update.message.reply_html('''
 /start - start or update bot
 /help - help
 /add_url - add car url or filter url
 /delete_url - delete car url or filter url
 /list_urls - list tracked urls
 /get_prices - list tracked car urls
-Prices are updated every hour.
+Prices are updated every 5 hours.
 For any questions and bugs please contact @defunator.
-    ''')
+Source: <a href="https://github.com/defunator/auto-ru-tracker">github</a>
+    ''', disable_web_page_preview=True)
 
 def add_url(update, context):
     update.message.reply_text('Enter auto.ru url you want to track.')
