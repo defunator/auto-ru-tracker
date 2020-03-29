@@ -30,7 +30,7 @@ def start(update, context):
 Prices are updated every hour.
 For any questions and bugs please contact @defunator.
     ''')
-    context.job_queue.run_repeating(update_urls, interval=60*60, first=0, context=update.message.chat_id)
+    context.job_queue.run_repeating(update_urls, interval=5*60*60, first=0, context=update.message.chat_id)
 
 
 def help(update, context):
