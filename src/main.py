@@ -68,17 +68,23 @@ def add_url_input(update, context):
 
 def list_urls(update, context):
     chat_id = update.message.chat_id
-    repl = "Here are urls you're tracking:"
+    resp = "Here are urls you're tracking:"
     no_urls = True
 
+    links_per_message = 0
     for url in table_utils.get_start_urls(chat_id):
         no_urls = False
-        repl = f'{repl}\n{url}'
+        links_per_message += 1
+        resp = f'{resp}\n{url}'
+        if links_per_message == 50:
+            update.message.reply_text(resp, disable_web_page_preview=True)
+            resp, links_per_message = '', 0
+
 
     if no_urls:
         update.message.reply_text('No urls are tracked, add via /add_url.')
-    else:
-        update.message.reply_text(repl, disable_web_page_preview=True)
+    elif links_per_message != 0:
+        update.message.reply_text(resp, disable_web_page_preview=True)
 
 def delete_url(update, context):
     update.message.reply_text('Enter auto.ru url you want to stop tracking.')
@@ -109,9 +115,15 @@ def get_prices(update, context):
 
     if has_prices:
         resps.sort(reverse=True)
+        links_per_message = 0
         for response in resps:
             resp = f'{resp}\n{response[1]}'
-        update.message.reply_html(resp, disable_web_page_preview=True)
+            links_per_message += 1
+            if links_per_message == 50:
+                update.message.reply_html(resp, disable_web_page_preview=True)
+                resp, links_per_message = '', 0
+        if links_per_message != 0
+            update.message.reply_html(resp, disable_web_page_preview=True)
     else:
         update.message.reply_text('No urls are tracked, you can add url via /add_url.')
 
@@ -140,9 +152,15 @@ def update_urls(context):
 
     if smth_changed:
         resps.sort(reverse=True)
+        links_per_message = 0
         for response in resps:
             resp = f'{resp}\n{response[1]}'
-        context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
+            links_per_message += 1
+            if links_per_message == 50:
+                context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
+                resp, links_per_message = '', 0
+        if links_per_message != 0
+            context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
