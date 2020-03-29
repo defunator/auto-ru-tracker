@@ -122,7 +122,7 @@ def get_prices(update, context):
             if links_per_message == 50:
                 update.message.reply_html(resp, disable_web_page_preview=True)
                 resp, links_per_message = '', 0
-        if links_per_message != 0
+        if links_per_message != 0:
             update.message.reply_html(resp, disable_web_page_preview=True)
     else:
         update.message.reply_text('No urls are tracked, you can add url via /add_url.')
