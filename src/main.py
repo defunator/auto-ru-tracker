@@ -159,7 +159,7 @@ def update_urls(context):
             if links_per_message == 50:
                 context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
                 resp, links_per_message = '', 0
-        if links_per_message != 0
+        if links_per_message != 0:
             context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 def error(update, context):
