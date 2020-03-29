@@ -20,20 +20,17 @@ class PriceTracker():
         self.no_errors = True
 
     def start_requests(self):
-        try:
-            for url in self.start_urls:
-                if '?' not in url:
-                    response = requests.get(url)
+        for url in self.start_urls:
+            if '?' not in url:
+                response = requests.get(url)
+                time.sleep(0.13)
+                self.parse_car_url(response, url, url)
+            else:
+                for page in range(1, 5):
+                    base_url = f'{url}&page={page}'
+                    response = requests.get(base_url)
                     time.sleep(0.13)
-                    self.parse_car_url(response, url, url)
-                else:
-                    for page in range(1, 5):
-                        base_url = f'{url}&page={page}'
-                        response = requests.get(base_url)
-                        time.sleep(0.13)
-                        self.parse_filter_url(response, base_url)
-        except:
-            self.no_errors = False
+                    self.parse_filter_url(response, base_url)
 
 
     def parse_car_url(self, response, url, base_url):
