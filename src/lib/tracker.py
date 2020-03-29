@@ -17,7 +17,6 @@ class PriceTracker():
         if start_urls == None:
             self.start_urls = table_utils.get_start_urls(chat_id)
         self.chat_id = chat_id
-        self.no_errors = True
 
     def start_requests(self):
         for url in self.start_urls:
@@ -34,15 +33,18 @@ class PriceTracker():
 
 
     def parse_car_url(self, response, url, base_url):
-        soup = BeautifulSoup(response.text, 'html.parser')
-        car_info = et.HTML(str(soup.find_all('div', {'data-bem': re.compile('{"sale-data-attributes".*}')})[0]))
-        car_info = car_info.getchildren()[0].getchildren()[0].get('data-bem')
-        car_info = json.loads(car_info)['sale-data-attributes']
-        price = car_info['price']
-        markName = car_info['markName']
-        modelName = car_info['modelName']
-        name = f'{markName} {modelName}'
-        table_utils.update_url(url, base_url, price, name, self.chat_id)
+        try:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            car_info = et.HTML(str(soup.find_all('div', {'data-bem': re.compile('{"sale-data-attributes".*}')})[0]))
+            car_info = car_info.getchildren()[0].getchildren()[0].get('data-bem')
+            car_info = json.loads(car_info)['sale-data-attributes']
+            price = car_info['price']
+            markName = car_info['markName']
+            modelName = car_info['modelName']
+            name = f'{markName} {modelName}'
+            table_utils.update_url(url, base_url, price, name, self.chat_id)
+        except:
+            print('parse_car_url fail')
 
     def parse_filter_url(self, response, base_url):
         soup = BeautifulSoup(response.text, 'html.parser')

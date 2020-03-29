@@ -60,11 +60,9 @@ def add_url_input(update, context):
     update.message.reply_text(f'Wait...')
     price_tracker = PriceTracker(start_urls=[url], chat_id=chat_id)
     price_tracker.start_requests()
-    if price_tracker.no_errors:
-        table_utils.add_start_url(url, chat_id)
-        update.message.reply_text(f'Added {url}', disable_web_page_preview=True)
-    else:
-        update.message.reply_text(f'Oops, failed to track {url}!', disable_web_page_preview=True)
+    
+    table_utils.add_start_url(url, chat_id)
+    update.message.reply_text(f'Added {url}', disable_web_page_preview=True)
 
     return ConversationHandler.END
 
