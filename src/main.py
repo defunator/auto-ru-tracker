@@ -97,16 +97,20 @@ def delete_url_input(update, context):
 def get_prices(update, context):
     chat_id = update.message.chat_id
     resp = 'Here are price changes history:'
+    resps = []
     has_prices = False
 
     for index, row in table_utils.get_prices(chat_id).iterrows():
         has_prices = True
-        car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), row['prices'])))
+        car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)).replace(',', "'"), row['prices'])))
         car_url = row['url']
         car_name = row['name'].encode('latin1').decode('utf8')
-        resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
+        resps.append((int(row['prices'][-1]), f'<a href="{car_url}">{car_name}</a>: {car_prices}'))
 
     if has_prices:
+        resps.sort(reverse=True)
+        for response in resps:
+            resp = f'{resp}\n{response}'
         update.message.reply_html(resp, disable_web_page_preview=True)
     else:
         update.message.reply_text('No urls are tracked, you can add url via /add_url.')
@@ -123,17 +127,21 @@ def update_urls(context):
     rows = table_utils.get_prices(chat_id)
     smth_changed = False
     resp = 'These ads has changed:'
+    resps = []
 
     for i in range(rows.shape[0]):
         clipped_row = rows.loc[i]['prices']
         if len(clipped_row) != prev_rows_size[i]:
             smth_changed = True
-            car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)), clipped_row)))
+            car_prices = '->'.join(list(map(lambda x: '{0:,d}'.format(int(x)).replace(',', "'"), clipped_row)))
             car_url = rows.loc[i]['url']
             car_name = rows.loc[i]['name'].encode('latin1').decode('utf8')
-            resp = f'{resp}\n<a href="{car_url}">{car_name}</a>: {car_prices}'
+            resps.append((int(clipped_row[-1]), f'<a href="{car_url}">{car_name}</a>: {car_prices}'))
 
     if smth_changed:
+        resps.sort(reverse=True)
+        for response in resps:
+            resp = f'{resp}\n{response}'
         context.bot.send_message(chat_id=chat_id, text=resp, disable_web_page_preview=True, parse_mode=ParseMode.HTML)
 
 def error(update, context):
