@@ -5,17 +5,17 @@ import pandas as pd
 
 
 def update_url(url, base_url, price, name, chat_id):
-    print(f'update_url {url}')
     if not os.path.exists('data'):
         os.makedirs('data')
     if not os.path.exists(f'./data/{chat_id}'):
         os.makedirs(f'./data/{chat_id}')
 
+    price = str(price)
     if os.path.exists(f'./data/{chat_id}/prices'):
         prices = pd.read_csv(f'./data/{chat_id}/prices')
         if url in prices.url.values:
-            prices_list = prices.loc[prices.url == url, 'prices'][0]
-            if str(prices_list).split('|')[-1] != str(price):
+            prices_list = prices.loc[prices.url == url, 'prices'].values[0]
+            if str(prices_list).split('|')[-1] != price:
                 prices.loc[prices.url == url, 'prices'] = f'{prices_list}|{price}'
         else:
             prices.loc[prices.shape[0]] = [base_url, url, name, price]
@@ -50,18 +50,22 @@ def add_start_url(url, chat_id):
 
 def delete_start_url(url, chat_id):
     if not os.path.exists(f'./data/{chat_id}/prices'):
-        return 0
+        return False
     if not os.path.exists(f'./data/{chat_id}/start_urls'):
-        return 0
+        return False
 
-    print(f'delete_start_url {url} from existing directory')
     start_urls = pd.read_csv(f'./data/{chat_id}/start_urls', index_col=0)
     prices = pd.read_csv(f'./data/{chat_id}/prices', index_col=0)
-    print(start_urls.index, prices.index)
 
     if url in start_urls.index and url in prices.index:
         start_urls.drop([url], inplace=True)
         prices.drop([url], inplace=True)
+        if len(start_urls.index) != 0:
+            start_urls.to_csv(f'./data/{chat_id}/start_urls', index=False)
+            prices.to_csv(f'./data/{chat_id}/prices', index=False)
+        else:
+            os.remove(f'./data/{chat_id}/start_urls')
+            os.remove(f'./data/{chat_id}/prices')
         return True
 
     return False

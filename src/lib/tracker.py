@@ -30,11 +30,10 @@ class PriceTracker():
                     base_url = f'{url}&page={page}'
                     response = requests.get(base_url)
                     time.sleep(0.13)
-                    self.parse_filter_url(response, base_url)
+                    self.parse_filter_url(response, url)
 
 
     def parse_car_url(self, response, url, base_url):
-        print(f'parse_car_url {url}')
         soup = BeautifulSoup(response.text, 'html.parser')
         car_info = et.HTML(str(soup.find_all('div', {'data-bem': re.compile('{"sale-data-attributes".*}')})[0]))
         car_info = car_info.getchildren()[0].getchildren()[0].get('data-bem')
@@ -46,7 +45,6 @@ class PriceTracker():
         table_utils.update_url(url, base_url, price, name, self.chat_id)
 
     def parse_filter_url(self, response, base_url):
-        print(f'parse_filter_url {base_url}')
         soup = BeautifulSoup(response.text, 'html.parser')
         for url_tag in soup.find_all('a', {'class': 'Link ListingItemThumb'}):
             url = et.HTML(str(url_tag)).getchildren()[0].getchildren()[0].get('href')
