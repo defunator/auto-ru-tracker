@@ -54,8 +54,10 @@ def delete_start_url(url, chat_id):
     if not os.path.exists(f'./data/{chat_id}/start_urls'):
         return 0
 
+    print(f'delete_start_url {url} from existing directory')
     start_urls = pd.read_csv(f'./data/{chat_id}/start_urls', index_col=0)
     prices = pd.read_csv(f'./data/{chat_id}/prices', index_col=0)
+    print(start_urls.index, prices.index)
 
     if url in start_urls.index and url in prices.index:
         start_urls.drop([url], inplace=True)
