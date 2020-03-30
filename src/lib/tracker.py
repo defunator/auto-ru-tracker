@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-
-import requests
 from bs4 import BeautifulSoup
 from lxml import etree as et
-import re
-import os
 import json
-import lib.table_utils as table_utils
+import os
+import re
+import requests
 import time
+
+import lib.table_utils as table_utils
 
 requests.adapters.DEFAULT_RETRIES = 5
 

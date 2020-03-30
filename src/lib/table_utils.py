@@ -1,81 +1,102 @@
-# -*- coding: utf-8 -*-
+'''
+tables structure:
+chat_ids
+row: chat_id | prices spreadsheet link | start_urls spreadsheet link
 
+prices_{chat_id}
+row: start_url(url or filter url) | url | name (car name) | price1 | price2  | ...
+
+start_urls_{chat_id}
+row: start_url
+'''
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import os
-import pandas as pd
+
+scope = [
+        'https://spreadsheets.google.com/feeds',
+        'https://www.googleapis.com/auth/drive'
+]
+
+credentials = ServiceAccountCredentials.from_json_keyfile_name(f'{os.getcwd()}/lib/credentials.json', scope)
+
+client = gspread.authorize(credentials)
+spreadsheet_link_prefix = 'https://docs.google.com/spreadsheets/d/'
+
+def add_chat_id(chat_id):
+    '''
+    If {chat_id} is not logged in adds in to {chat_ids} and creates needed tables.
+    '''
+    chat_ids = client.open('chat_ids').sheet1
+
+    if len(chat_ids.findall(str(chat_id))) == 0:
+        prices = client.create(f'prices_{chat_id}')
+        prices.share('semyonli21@gmail.com', perm_type='user', role='writer')
+        start_urls = client.create(f'start_urls_{chat_id}')
+        start_urls.share('semyonli21@gmail.com', perm_type='user', role='writer')
+
+        chat_ids.append_row([chat_id,
+                    f'{spreadsheet_link_prefix}{prices.id}',
+                    f'{spreadsheet_link_prefix}{start_urls.id}'])
 
 
-def update_url(url, base_url, price, name, chat_id):
-    if not os.path.exists('data'):
-        os.makedirs('data')
-    if not os.path.exists(f'./data/{chat_id}'):
-        os.makedirs(f'./data/{chat_id}')
+def update_car_price(start_url, url, name, price, chat_id):
+    '''
+    Tries to update car ad's price on {url}, if price didn't change - doesn't update.
+    '''
+    prices = client.open(f'prices_{chat_id}').sheet1
+    url_row = prices.findall(url)
 
-    price = str(price)
-    if os.path.exists(f'./data/{chat_id}/prices'):
-        prices = pd.read_csv(f'./data/{chat_id}/prices')
-        if url in prices.url.values:
-            prices_list = prices.loc[prices.url == url, 'prices'].values[0]
-            if str(prices_list).split('|')[-1] != price:
-                prices.loc[prices.url == url, 'prices'] = f'{prices_list}|{price}'
-        else:
-            prices.loc[prices.shape[0]] = [base_url, url, name, price]
+    if len(url_row) == 0:
+        prices.append_row([start_url, url, name, price])
     else:
-        prices = pd.DataFrame({'base_url': [base_url],
-                               'url': [url],
-                               'name': [name],
-                               'prices': [price]})
+        row = prices.row_values(url_row[0].row)
+        if int(row[-1]) != price:
+            prices.update_cell(url_row[0].row, len(row) + 1, price)
 
-    prices.to_csv(f'./data/{chat_id}/prices', index=False)
+def add_start_url(start_url, chat_id):
+    '''
+    Tries to add start_url to start_urls, if already exists - doesn't add.
+    '''
+    start_urls = client.open(f'start_urls_{chat_id}').sheet1
 
-def get_start_urls(chat_id):
-    if os.path.exists(f'./data/{chat_id}/start_urls'):
-        start_urls = pd.read_csv(f'./data/{chat_id}/start_urls')
-        return list(start_urls.url)
-    return []
-
-def add_start_url(url, chat_id):
-    if not os.path.exists('data'):
-        os.makedirs('data')
-    if not os.path.exists(f'./data/{chat_id}'):
-        os.makedirs(f'./data/{chat_id}')
-
-    if os.path.exists(f'./data/{chat_id}/start_urls'):
-        start_urls = pd.read_csv(f'./data/{chat_id}/start_urls')
-        if url not in start_urls.url.values:
-            start_urls.loc[start_urls.shape[0]] = [url]
-    else:
-        start_urls = pd.DataFrame({'url': [url]})
-
-    start_urls.to_csv(f'./data/{chat_id}/start_urls', index=False)
-
-def delete_start_url(url, chat_id):
-    if not os.path.exists(f'./data/{chat_id}/prices'):
-        return False
-    if not os.path.exists(f'./data/{chat_id}/start_urls'):
-        return False
-
-    start_urls = pd.read_csv(f'./data/{chat_id}/start_urls', index_col=0)
-    prices = pd.read_csv(f'./data/{chat_id}/prices', index_col=0)
-
-    if url in start_urls.index and url in prices.index:
-        start_urls.drop([url], inplace=True)
-        prices.drop([url], inplace=True)
-        if len(start_urls.index) != 0:
-            start_urls.to_csv(f'./data/{chat_id}/start_urls', index=False)
-            prices.to_csv(f'./data/{chat_id}/prices', index=False)
-        else:
-            os.remove(f'./data/{chat_id}/start_urls')
-            os.remove(f'./data/{chat_id}/prices')
-        return True
-
-    return False
+    if len(start_urls.findall(start_url)) == 0:
+        start_urls.append_row([start_url])
 
 def get_prices(chat_id):
-    if not os.path.exists(f'./data/{chat_id}/prices'):
-        return pd.DataFrame()
-    prices = pd.read_csv(f'./data/{chat_id}/prices')
-    prices.prices = prices.prices.apply(lambda x: str(x).split('|'))
+    '''
+    Returns prices_{chat_id} table.
+    '''
+    raw_prices = client.open(f'prices_{chat_id}').sheet1.get_all_values()
+    prices = []
+
+    for price in raw_prices:
+        prices.append([])
+        for el in price:
+            if el == '':
+                break
+            if el.isnumeric():
+                prices[-1].append('{0:,d}'.format(int(el)).replace(',', "'"))
+            else:
+                prices[-1].append(el)
+
     return prices
 
+def get_start_urls(chat_id):
+    '''
+    Returns list of start_urls.
+    '''
+    start_urls = client.open(f'start_urls_{chat_id}').sheet1.get_all_values()
+    return [start_url[0] for start_url in start_urls]
 
+def delete_start_url(start_url, chat_id):
+    '''
+    Deletes start_url from start_urls and row with same start_url from prices.
+    '''
+    start_urls = client.open(f'start_urls_{chat_id}').sheet1
+    for row in start_urls.findall(start_url)[::-1]:
+        start_urls.delete_row(row.row)
 
+    prices = client.open(f'prices_{chat_id}').sheet1
+    for row in prices.findall(start_url)[::-1]:
+        prices.delete_row(row.row)

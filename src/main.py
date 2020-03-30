@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
-import logging
+from telegram import ParseMode
 from telegram.ext import (Updater, CommandHandler, MessageHandler,
                         Filters, ConversationHandler, CallbackQueryHandler)
-from telegram import ParseMode
 from twisted.internet import reactor
+import logging
 import re
 
+from lib.tokens import TOKEN
 from lib.tracker import PriceTracker
 import lib.table_utils as table_utils
-from lib.tokens import TOKEN
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
