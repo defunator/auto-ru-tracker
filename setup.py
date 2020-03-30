@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 setup(name = 'auto-ru-tracker',
     version = '1.0',
     url = 'https://github.com/defunator/auto-ru-tracker',
@@ -9,5 +8,6 @@ setup(name = 'auto-ru-tracker',
     description = 'A telegram bot that tracks auto.ru ads.',
     packages = ['src'],
     scripts = ['track'],
-    install_requires = ['beautifulsoup4', 'requests', 'pandas', 'lxml', 'python-telegram-bot', 'Twisted']
+    install_requires = ['beautifulsoup4', 'requests', 'lxml', 'python-telegram-bot',
+                        'Twisted', 'gspread', 'oauth2client']
 )
