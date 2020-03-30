@@ -18,7 +18,7 @@ scope = [
         'https://www.googleapis.com/auth/drive'
 ]
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name(f'{os.getcwd()}/lib/credentials.json', scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name(f'{os.getcwd()}/src/lib/credentials.json', scope)
 
 client = gspread.authorize(credentials)
 spreadsheet_link_prefix = 'https://docs.google.com/spreadsheets/d/'
