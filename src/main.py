@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 ADD_URL = range(1)
 DELETE_URL = range(1)
-UPDATE_INTERVAL = 30 # update every 5 hours
+UPDATE_INTERVAL = 5 * 60 * 60 # update every 5 hours
 MAX_LINKS_PER_MESSAGE = 50 # if more telegram does't display links
 
 def update_prices(context):
