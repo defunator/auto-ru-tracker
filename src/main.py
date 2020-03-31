@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 ADD_URL = range(1)
 DELETE_URL = range(1)
-UPDATE_INTERVAL = 5 * 60 * 60 # update every 5 hours
+UPDATE_INTERVAL = 30 # update every 5 hours
 MAX_LINKS_PER_MESSAGE = 50 # if more telegram does't display links
 
 def update_prices(context):
@@ -41,7 +41,7 @@ def update_prices(context):
             smth_changed = True
             car_prices = '->'.join(rows[i][3:])
             car_url = rows[i][1]
-            car_name = rows[i][2].encode('latin1').decode('utf8')
+            car_name = rows[i][2].encode('utf-8').decode('utf-8')
             resps.append((int(rows[i][-1].replace("'", '')), f'<a href="{car_url}">{car_name}</a>: {car_prices}'))
 
     if len(resps) != 0:
@@ -87,7 +87,7 @@ Source: <a href="https://github.com/defunator/auto-ru-tracker">github</a>
     ''', disable_web_page_preview=True)
 
 def add_url(update, context):
-    update.message.reply_text('Enter auto.ru url you want to track.')
+    update.message.reply_text("Enter auto.ru or avito.ru url you want to track. Don't forget to cut off \"&page=...\" and \"&p=...\" from the end.")
     return ADD_URL
 
 def add_url_input(update, context):
@@ -95,8 +95,8 @@ def add_url_input(update, context):
     Adds url to chat_id's tracked urls and tracks it once.
     '''
     url = update.message.text
-    if url[:16] !=  'https://auto.ru/':
-        update.message.reply_text(f'Oops, failed to track {url}! May be url is wrong. It should start with "https://auto.ru/"', disable_web_page_preview=True)
+    if url[:16] !=  'https://auto.ru/' and url[:21] !=  'https://www.avito.ru/':
+        update.message.reply_text(f'Oops, failed to track {url}! May be url is wrong. It should start with "https://auto.ru/" or with "https://www.avito.ru/"', disable_web_page_preview=True)
         return ConversationHandler.END
         
     chat_id = update.message.chat_id
@@ -134,7 +134,7 @@ def list_urls(update, context):
 
 def delete_url(update, context):
     list_urls(update, context)
-    update.message.reply_text('Enter auto.ru url you want to stop tracking.')
+    update.message.reply_text('Enter auto.ru or avito.ru url you want to stop tracking.')
     return DELETE_URL
 
 def delete_url_input(update, context):
@@ -163,7 +163,7 @@ def get_prices(update, context):
         has_prices = True
         car_prices = '->'.join(row[3:])
         car_url = row[1]
-        car_name = row[2].encode('latin1').decode('utf8')
+        car_name = row[2].encode('utf-8').decode('utf-8')
         resps.append((int(row[-1].replace("'", '')), f'<a href="{car_url}">{car_name}</a>: {car_prices}'))
 
     if has_prices:
