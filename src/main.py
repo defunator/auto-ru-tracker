@@ -206,7 +206,7 @@ if __name__ == '__main__':
     )
     dp.add_error_handler(error)
 
-    # Restart updating for logged chat_ids aftert restart
+    # Create cron for logged chat_ids after restart
     for chat_id in table_utils.get_chat_ids():
         updater.job_queue.run_repeating(update_prices, interval=UPDATE_INTERVAL, first=0, context=chat_id)
 
