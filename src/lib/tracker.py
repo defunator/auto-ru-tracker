@@ -31,7 +31,7 @@ class PriceTracker():
                     self.parse_filter_url(response, url)
 
 
-    def parse_car_url(self, response, url, base_url):
+    def parse_car_url(self, response, start_url, url):
         try:
             soup = BeautifulSoup(response.text, 'html.parser')
             car_info = et.HTML(str(soup.find_all('div', {'data-bem': re.compile('{"sale-data-attributes".*}')})[0]))
@@ -41,15 +41,18 @@ class PriceTracker():
             markName = car_info['markName']
             modelName = car_info['modelName']
             name = f'{markName} {modelName}'
-            table_utils.update_url(url, base_url, price, name, self.chat_id)
+            table_utils.update_car_price(start_url, url, name, price, self.chat_id)
         except:
-            print('parse_car_url fail')
+            print(f'ERROR: parse_car_url {url}')
 
-    def parse_filter_url(self, response, base_url):
-        soup = BeautifulSoup(response.text, 'html.parser')
-        for url_tag in soup.find_all('a', {'class': 'Link ListingItemThumb'}):
-            url = et.HTML(str(url_tag)).getchildren()[0].getchildren()[0].get('href')
-            response = requests.get(url)
-            time.sleep(0.13)
-            self.parse_car_url(response, url, base_url)
+    def parse_filter_url(self, response, start_url):
+        try:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            for url_tag in soup.find_all('a', {'class': 'Link ListingItemThumb'}):
+                url = et.HTML(str(url_tag)).getchildren()[0].getchildren()[0].get('href')
+                response = requests.get(url)
+                time.sleep(0.13)
+                self.parse_car_url(response, start_url, url)
+        except:
+            print(f'ERROR: parse_filter_url {start_url}')
 
