@@ -28,6 +28,8 @@ def add_chat_id(chat_id):
     If {chat_id} is not logged in adds in to {chat_ids} and creates needed tables.
     Return True if new chat_id.
     '''
+    if credentials.access_token_expired:
+        client.login()
     chat_ids = client.open('chat_ids').sheet1
 
     if len(chat_ids.findall(str(chat_id))) == 0:
@@ -46,6 +48,8 @@ def get_chat_ids():
     '''
     Returns logged chat_ids.
     '''
+    if credentials.access_token_expired:
+        client.login()
     chat_ids = client.open('chat_ids').sheet1.get_all_values()
     return [int(chat_id[0]) for chat_id in chat_ids]
 
@@ -53,6 +57,8 @@ def update_car_price(start_url, url, name, price, chat_id):
     '''
     Tries to update car ad's price on {url}, if price didn't change - doesn't update.
     '''
+    if credentials.access_token_expired:
+        client.login()
     prices = client.open(f'prices_{chat_id}').sheet1
     url_row = prices.findall(url)
 
@@ -67,6 +73,8 @@ def get_prices(chat_id):
     '''
     Returns prices_{chat_id} table.
     '''
+    if credentials.access_token_expired:
+        client.login()
     raw_prices = client.open(f'prices_{chat_id}').sheet1.get_all_values()
     prices = []
 
@@ -86,6 +94,8 @@ def add_start_url(start_url, chat_id):
     '''
     Tries to add start_url to start_urls, if already exists - doesn't add.
     '''
+    if credentials.access_token_expired:
+        client.login()
     start_urls = client.open(f'start_urls_{chat_id}').sheet1
 
     if len(start_urls.findall(start_url)) == 0:
@@ -95,6 +105,8 @@ def get_start_urls(chat_id):
     '''
     Returns list of start_urls.
     '''
+    if credentials.access_token_expired:
+        client.login()
     start_urls = client.open(f'start_urls_{chat_id}').sheet1.get_all_values()
     return [start_url[0] for start_url in start_urls]
 
@@ -102,6 +114,9 @@ def delete_start_url(start_url, chat_id):
     '''
     Deletes start_url from start_urls and row with same start_url from prices.
     '''
+    if credentials.access_token_expired:
+        client.login()
+
     has_start_url = False
     start_urls = client.open(f'start_urls_{chat_id}').sheet1
     for row in start_urls.findall(start_url)[::-1]:
