@@ -25,10 +25,10 @@ def update_prices(context):
     and sends notification on changes.
     '''
     chat_id = context.job.context
-    prev_rows_size = []
+    prev_rows_size = dict()
 
     for row in table_utils.get_prices(chat_id):
-        prev_rows_size.append(len(row))
+        prev_rows_size[row[1]] = len(row)
 
     PriceTracker(chat_id=chat_id).start_requests()
 
@@ -37,7 +37,7 @@ def update_prices(context):
     resps = []
 
     for i in range(len(rows)):
-        if len(rows[i]) != prev_rows_size[i]:
+        if (rows[i][1] in prev_rows_size and len(rows[i]) != prev_rows_size[rows[i][1]]) or rows[i][1] not in prev_rows_size:
             smth_changed = True
             car_prices = '->'.join(rows[i][3:])
             car_url = rows[i][1]
