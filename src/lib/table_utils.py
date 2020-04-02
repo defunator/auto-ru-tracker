@@ -9,9 +9,10 @@ row: start_url(url or filter url) | url | name (car name) | price1 | price2  | .
 start_urls_{chat_id}
 row: start_url
 '''
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import gspread
 import os
+import time
 
 scope = [
         'https://spreadsheets.google.com/feeds',
@@ -28,6 +29,7 @@ def add_chat_id(chat_id):
     If {chat_id} is not logged in adds in to {chat_ids} and creates needed tables.
     Return True if new chat_id.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     chat_ids = client.open('chat_ids').sheet1
@@ -48,6 +50,7 @@ def get_chat_ids():
     '''
     Returns logged chat_ids.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     chat_ids = client.open('chat_ids').sheet1.get_all_values()
@@ -57,6 +60,7 @@ def update_car_price(start_url, url, name, price, chat_id):
     '''
     Tries to update car ad's price on {url}, if price didn't change - doesn't update.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     prices = client.open(f'prices_{chat_id}').sheet1
@@ -73,6 +77,7 @@ def get_prices(chat_id):
     '''
     Returns prices_{chat_id} table.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     raw_prices = client.open(f'prices_{chat_id}').sheet1.get_all_values()
@@ -94,6 +99,7 @@ def add_start_url(start_url, chat_id):
     '''
     Tries to add start_url to start_urls, if already exists - doesn't add.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     start_urls = client.open(f'start_urls_{chat_id}').sheet1
@@ -105,6 +111,7 @@ def get_start_urls(chat_id):
     '''
     Returns list of start_urls.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
     start_urls = client.open(f'start_urls_{chat_id}').sheet1.get_all_values()
@@ -114,6 +121,7 @@ def delete_start_url(start_url, chat_id):
     '''
     Deletes start_url from start_urls and row with same start_url from prices.
     '''
+    time.sleep(1.23)
     if credentials.access_token_expired:
         client.login()
 
@@ -122,9 +130,11 @@ def delete_start_url(start_url, chat_id):
     for row in start_urls.findall(start_url)[::-1]:
         has_start_url = True
         start_urls.delete_row(row.row)
+        time.sleep(0.45)
 
     prices = client.open(f'prices_{chat_id}').sheet1
     for row in prices.findall(start_url)[::-1]:
         prices.delete_row(row.row)
+        time.sleep(0.45)
 
     return has_start_url
